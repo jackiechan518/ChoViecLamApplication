@@ -4,20 +4,24 @@ import { db } from '../../config/FirebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import Colors from '../../constants/Colors';
 
-export default function Category() {
-  const [selectedCategory, setSelectedCategory] = useState('partime');
+export default function Category({category}) {
+  const [selectedCategory, setSelectedCategory] = useState('waiter');
   const [categoryList, setCategoryList] = useState([]);
 
   const categoryNames = {
-    partime: 'Bán Thời Gian',
-    fulltime: 'Toàn Thời Gian',
+    bartender: 'Pha Chế',
+    waiter: 'Phục Vụ',
     casual: 'Casual',
     urgent: 'Gấp',
     tutor: 'Dạy Kèm',
+    sale: 'Bán Hàng',
+    kitchen: 'Phụ Bếp',
+    security: 'Bảo Vệ',
+    'pg/pb': 'PG/PB',
     orther: 'Khác'
   };
 
-  const categoryOrder = ['partime', 'fulltime', 'casual', 'tutor', 'pb/pg', 'urgent', 'orther'];
+  const categoryOrder = ['waiter', 'bartender', 'tutor', 'casual', 'urgent', 'sale', 'pg/pb', 'kitchen', 'security', 'orther'];
 
   useEffect(() => {
     GetCategories();
@@ -48,7 +52,10 @@ export default function Category() {
         data={categoryList}
         horizontal={true}
         renderItem={({item,index}) => (
-          <TouchableOpacity style={{ flex: 1 }} onPress={() => setSelectedCategory(item?.name)}>
+          <TouchableOpacity style={{ flex: 1 }} onPress={() => {
+            setSelectedCategory(item?.name)
+            category(item.name)
+            }}>
             <View style={[styles.container,
               selectedCategory === item?.name ? { backgroundColor: Colors.primary } : { backgroundColor: Colors.secondary }
             ]}>

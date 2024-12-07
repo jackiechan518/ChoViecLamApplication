@@ -42,7 +42,7 @@ export default function Slider() {
 const styles = StyleSheet.create({
     sliderImage: {
         width: Dimensions.get('screen').width*0.9,
-        height: 180,
+        height: 150,
         borderRadius: 10,
         marginRight: 5,
         marginLeft: 15
