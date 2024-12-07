@@ -1,11 +1,20 @@
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Colors from '../../constants/Colors';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 import * as WebBrowser from 'expo-web-browser';
-import { useOAuth } from '@clerk/clerk-expo';
+import * as Google from 'expo-auth-session/providers/google';
+import { useOAuth, useUser } from '@clerk/clerk-expo';
 import * as Linking from 'expo-linking';
+
+
+const webClientId = '228527096989-i9snb6k1ne530nabe1q0h64tn0tjtq92.apps.googleusercontent.com';
+const iosClientId = '228527096989-muoqv9b09klitsv7lldpvnq41shsmcg4.apps.googleusercontent.com';
+const androidClientId = '228527096989-9qpp8rs98u3lsc1le6rt7g570eufh4hc.apps.googleusercontent.com';
+
+WebBrowser.maybeCompleteAuthSession();
+
 
 //xử lý login google
 export const useWarmUpBrowser = () => {
@@ -19,9 +28,27 @@ export const useWarmUpBrowser = () => {
   }, [])
 }
 
-WebBrowser.maybeCompleteAuthSession()
 
 export default function Login() {
+  const config = {
+    webClientId,
+    iosClientId,
+    androidClientId,
+  };
+
+  const [request, response, promptAsync] = Google.useAuthRequest(config);
+  
+  const handleToken = ()=>{
+    if(response?.type === 'success'){ 
+      const {authentication} = response;
+      const token = authentication?.accessToken;
+      console.log('token: ', token);
+    }
+  }
+  useEffect(()=>{
+    handleToken();
+  }, [response])
+
   useWarmUpBrowser()
 
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' })
@@ -32,12 +59,18 @@ export default function Login() {
       })
 
       if (createdSessionId) {
+        setActive(createdSessionId);
+        router.push('/(tabs)/home');
       } else {
         // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
+      console.error(err);
     }
   }, [])
+
+
+
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -85,7 +118,7 @@ export default function Login() {
         <Text style={styles.loginButtonText} >ĐĂNG NHẬP</Text>
       </Pressable>
       <Text style={styles.orText}>HOẶC</Text>
-      <Pressable style={styles.socialButton} onPress={onPress}>
+      <Pressable style={styles.socialButton} onPress={() => promptAsync()}>
         <Image source={require('../../assets/images/google-icon.png')} style={styles.icon} />
         <Text style={styles.socialButtonText}>Đăng nhập bằng Google</Text>
       </Pressable>
