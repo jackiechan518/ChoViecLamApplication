@@ -7,6 +7,7 @@ import JobListItem from './JobListItem';
 
 export default function JobListbyCategory() {
   const [jobList, setJobList] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     GetListJobs('waiter');
@@ -14,6 +15,7 @@ export default function JobListbyCategory() {
 
   const GetListJobs = async (category) => {
     try {
+      setLoader(true);
       setJobList([]);
       const q = query(collection(db, 'Jobs'), where('category', '==', category));
       const querySnapshot = await getDocs(q);
@@ -23,6 +25,7 @@ export default function JobListbyCategory() {
         console.log(jobs);
       });
       setJobList(jobs);
+      setLoader(false);
     } catch (error) {
       console.error("Error fetching jobs: ", error);
     }
@@ -36,6 +39,8 @@ export default function JobListbyCategory() {
       <FlatList
         horizontal={true}
         data={jobList}
+        refreshing={loader}
+        onRefresh={() => GetListJobs(category)}
         renderItem={({ item }) => (
           <JobListItem job={item} />
         )}

@@ -16,11 +16,10 @@ const categoryNames = {
 };
 
 export default function JobListItem({ job }) {
-    console.log("job ở bên list", job);
   return (
     <View
         style={{
-            marginTop: 10,
+            marginTop: 20,
             padding: 10,
             marginRight: 15,
             marginLeft: 20,
@@ -66,6 +65,7 @@ export default function JobListItem({ job }) {
                 fontFamily: 'Baloo2-Regular',
             }}>{'Lương: ' + job.salary}</Text>
         </View>
+        <View style={{width: 250, height: 25}}>
         <Text style={{ 
             fontSize: 12, 
             fontFamily: 'Baloo2-Regular',
@@ -74,6 +74,7 @@ export default function JobListItem({ job }) {
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
         }}>{'Địa chỉ: ' + job.address}</Text>
+        </View>
     </View>
   )
 }

@@ -16,6 +16,9 @@ export default function Home() {
       {/* Job List + Category */}
       <JobListbyCategory />
       {/* Add New Jobs */}
+      <View>
+        <Text>Add New Jobs</Text>
+      </View>
       </ScrollView>
   )
 }
