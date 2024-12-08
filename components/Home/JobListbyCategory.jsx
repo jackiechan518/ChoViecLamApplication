@@ -16,20 +16,21 @@ export default function JobListbyCategory() {
   const GetListJobs = async (category) => {
     try {
       setLoader(true);
-      setJobList([]);
       const q = query(collection(db, 'Jobs'), where('category', '==', category));
       const querySnapshot = await getDocs(q);
       const jobs = [];
       querySnapshot.forEach((doc) => {
-        jobs.push({ id: doc.id, ...doc.data() });
-        console.log(jobs);
+        jobs.push(doc.data());
       });
       setJobList(jobs);
+      console.log("jobList: ", jobs);
       setLoader(false);
     } catch (error) {
       console.error("Error fetching jobs: ", error);
+      setLoader(false);
     }
   }
+  
 
 
 
