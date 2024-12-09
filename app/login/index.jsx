@@ -1,13 +1,13 @@
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '../../constants/Colors';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons'; 
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
-import { useOAuth, useUser } from '@clerk/clerk-expo';
 import * as Linking from 'expo-linking';
-
+import { appInfo } from '../../constants/appInfo';
 
 const webClientId = '228527096989-i9snb6k1ne530nabe1q0h64tn0tjtq92.apps.googleusercontent.com';
 const iosClientId = '228527096989-muoqv9b09klitsv7lldpvnq41shsmcg4.apps.googleusercontent.com';
@@ -15,19 +15,15 @@ const androidClientId = '228527096989-9qpp8rs98u3lsc1le6rt7g570eufh4hc.apps.goog
 
 WebBrowser.maybeCompleteAuthSession();
 
-
-//xử lý login google
+// Xử lý login google
 export const useWarmUpBrowser = () => {
   React.useEffect(() => {
-    // Warm up the android browser to improve UX
-    // https://docs.expo.dev/guides/authentication/#improving-user-experience
-    void WebBrowser.warmUpAsync()
+    void WebBrowser.warmUpAsync();
     return () => {
-      void WebBrowser.coolDownAsync()
-    }
-  }, [])
-}
-
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 
 export default function Login() {
   const config = {
@@ -38,48 +34,59 @@ export default function Login() {
 
   const [request, response, promptAsync] = Google.useAuthRequest(config);
   
-  const handleToken = ()=>{
-    if(response?.type === 'success'){ 
-      const {authentication} = response;
+  const handleToken = () => {
+    if (response?.type === 'success') { 
+      const { authentication } = response;
       const token = authentication?.accessToken;
       console.log('token: ', token);
     }
-  }
-  useEffect(()=>{
+  };
+
+  useEffect(() => {
     handleToken();
-  }, [response])
+  }, [response]);
 
-  useWarmUpBrowser()
-
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' })
-  const onPress = useCallback(async () => {
-    try {
-      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/(tabs)/home', { scheme: 'myapp' }),
-      })
-
-      if (createdSessionId) {
-        setActive(createdSessionId);
-        router.push('/(tabs)/home');
-      } else {
-        // Use signIn or signUp for next steps such as MFA
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }, [])
-
-
-
+  useWarmUpBrowser();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); 
   const [rememberMe, setRememberMe] = useState(false); 
 
-  const handleLogin = () => {
-    router.push('/(tabs)/home'); 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${appInfo.baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', data);
+        await AsyncStorage.setItem('userToken', data.data.accesstoken);
+        const storedToken = await AsyncStorage.getItem(data.data.accesstoken);
+        router.push('/(tabs)/home'); 
+      } else {
+        console.error('Login failed:', data.message);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+    }
   };
+
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        router.push('/(tabs)/home');
+      }
+    };
+    checkToken();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -115,7 +122,7 @@ export default function Login() {
         </Pressable>
       </View>
       <Pressable style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText} >ĐĂNG NHẬP</Text>
+        <Text style={styles.loginButtonText}>ĐĂNG NHẬP</Text>
       </Pressable>
       <Text style={styles.orText}>HOẶC</Text>
       <Pressable style={styles.socialButton} onPress={() => promptAsync()}>
@@ -217,7 +224,6 @@ const styles = StyleSheet.create({
     marginTop: -200,
     marginBottom: -50,
     width: '80%',
-    // height: '80%',
     resizeMode: 'contain',
     alignSelf: 'center',
   },
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    justifyContent: 'space-between', // Align items to the edges
+    justifyContent: 'space-between',
   },
   rememberMeLeft: {
     flexDirection: 'row',

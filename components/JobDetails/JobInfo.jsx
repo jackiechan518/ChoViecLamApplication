@@ -1,9 +1,9 @@
 import { View, Text, Image } from 'react-native'
 import React from 'react'
-import AntDesign from '@expo/vector-icons/AntDesign';
+import MarkFav from '../MarkFav';
 
 
-export default function JobInfo({ job }) {
+export default function JobInfo({ job}) {
   return (
     <View>
       <Image source={{ uri: job?.image }} 
@@ -24,7 +24,6 @@ export default function JobInfo({ job }) {
                 <Text style={{ fontSize: 20, fontFamily: 'Baloo2-Bold' }}>{job?.title}</Text>
                 <Text style={{ fontSize: 16, fontFamily: 'Baloo2-Regular' }}>{job?.address}</Text>
             </View>
-            <AntDesign name="hearto" size={24} color="black" />
         </View>  
     </View>
   )

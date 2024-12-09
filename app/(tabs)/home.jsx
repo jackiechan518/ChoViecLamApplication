@@ -1,10 +1,11 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../components/Home/Header';
-import { useUser } from '@clerk/clerk-expo';
+// import { useUser } from '@clerk/clerk-expo';
 import Slider from '../../components/Home/Slider';
 import JobListbyCategory from '../../components/Home/JobListbyCategory';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Colors from '../../constants/Colors';
+import { Link } from 'expo-router';
 export default function Home() {
 
   return(
@@ -17,10 +18,11 @@ export default function Home() {
       {/* Job List + Category */}
       <JobListbyCategory />
       {/* Add New Jobs */}
-      <TouchableOpacity style={styles.addNewJobContainer}>
+      
+      <Link href="/add-new-job" style={styles.addNewJobContainer}>
         <MaterialIcons name="add-shopping-cart" size={30} color="white" />
         <Text style={{fontSize: 18, fontFamily: 'Baloo2-Bold', marginLeft: 10, color: Colors.white2}}>Thêm Việc Làm</Text>
-      </TouchableOpacity>
+      </Link>
       </ScrollView>
   )
 }
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center', 
     padding: 20,
+    textAlign: 'center',
     marginHorizontal: 20,
     justifyContent: 'center',
     backgroundColor: Colors.primary,

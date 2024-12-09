@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-expo";
+// import { useUser } from "@clerk/clerk-expo";
 import { View, Text, Image } from "react-native";
 
 export default function Header() {

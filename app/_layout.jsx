@@ -1,4 +1,4 @@
-import { ClerkProvider, ClerkLoaded, useUser, useAuth } from '@clerk/clerk-expo'
+import { ClerkProvider, ClerkLoaded, useAuth } from '@clerk/clerk-expo'
 import { Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import * as SecureStore from 'expo-secure-store';
